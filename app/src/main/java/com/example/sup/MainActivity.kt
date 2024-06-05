@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -64,7 +65,9 @@ class MainActivity : ComponentActivity() {
 fun SupAppLayout(modifier: Modifier = Modifier) {
     val backgroundImage = painterResource(id = R.drawable.whatsapp_background)
 
-    val mutableListSender = mutableListOf("");
+    var mutableListSender by remember {
+        mutableStateOf(mutableListOf<String>())
+    }
 
     Box {
         Image(
@@ -84,18 +87,17 @@ fun SupAppLayout(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.End // Align content center horizontally
             ) {
-
-                SenderMessageBubbles()
+                SenderMessageBubbles(messageList = mutableListSender)
             }
-
         }
-
-        MessageWritingArea(modifier = modifier)
+        MessageWritingArea(modifier = modifier) { newMessage ->
+            mutableListSender = (mutableListSender + newMessage).toMutableList()
+        }
     }
 }
 
 @Composable
-fun MessageWritingArea(modifier: Modifier =  Modifier) {
+fun MessageWritingArea(modifier: Modifier =  Modifier, onMessageAdded: (String) -> Unit) {
     var message by remember {
         mutableStateOf("")
     }
@@ -170,7 +172,9 @@ fun MessageWritingArea(modifier: Modifier =  Modifier) {
                         }
                     }
                     false -> IconButton(
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                            onMessageAdded(message)
+                        },
                     ) {
                         Icon(
                             Icons.Sharp.Send,
