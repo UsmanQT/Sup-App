@@ -41,8 +41,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.sup.components.ReceiverMessageBubbles
+import com.example.sup.components.SenderMessageBubbles
 import com.example.sup.ui.theme.SupTheme
 
 class MainActivity : ComponentActivity() {
@@ -65,13 +68,30 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun SupAppLayout(modifier: Modifier = Modifier) {
     val backgroundImage = painterResource(id = R.drawable.whatsapp_background)
-    Box() {
+    Box {
         Image(
             painter = backgroundImage,
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
+        Column(
+            modifier = Modifier.fillMaxSize(), // Occupy entire available space
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.Start // Align content center horizontally
+        ) {
+            ReceiverMessageBubbles()
+            Column(
+                modifier = Modifier.fillMaxSize(), // Occupy entire available space
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.End // Align content center horizontally
+            ) {
+
+                SenderMessageBubbles()
+            }
+
+        }
+
         MessageWritingArea(modifier = modifier)
     }
 }
@@ -98,12 +118,12 @@ fun MessageWritingArea(modifier: Modifier =  Modifier) {
 
                 }
                 TextField(
-                    value = "", onValueChange = {},
+                    value = "Whats the update?", onValueChange = {},
+                    textStyle = TextStyle(color = Color.Black),
                     shape = RoundedCornerShape(20.dp),
                     modifier = Modifier
-                        .height(80.dp)
-                        .weight(3f)
-                        .padding(top = 20.dp, bottom = 20.dp),
+                        .weight(3f)// Fill the available width
+                        .padding(vertical = 10.dp),
                     colors = TextFieldDefaults.colors(
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
