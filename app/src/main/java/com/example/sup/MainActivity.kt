@@ -1,5 +1,6 @@
 package com.example.sup
 
+import android.graphics.drawable.Icon
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,10 +15,20 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.sharp.AccountBox
+import androidx.compose.material.icons.sharp.Add
+import androidx.compose.material.icons.sharp.Call
 import androidx.compose.material3.Card
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -72,22 +83,55 @@ fun MessageWritingArea(modifier: Modifier =  Modifier) {
         contentAlignment = Alignment.BottomCenter) {
         Card(modifier = modifier) {
             Row(
-                modifier = modifier
+                modifier = modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                IconButton(
+                    onClick = { /*TODO*/ },
+                ) {
+                    Icon(
+                        Icons.Sharp.Add,
+                        "add document",
+                        modifier = modifier.size(30.dp)
+                    )
+
+                }
                 TextField(
                     value = "", onValueChange = {},
                     shape = RoundedCornerShape(20.dp),
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                        .border(
-                            BorderStroke(
-                                width = 1.dp,
-                                color = Color.Gray,
-                            )
-                        ),
-
+                        .height(80.dp)
+                        .weight(3f)
+                        .padding(top = 20.dp, bottom = 20.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        cursorColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0f),
+                        focusedContainerColor = Color.White,
+                        unfocusedContainerColor = Color.White,
                     )
+                )
+                IconButton(
+                    onClick = { /*TODO*/ },
+                ) {
+                    Icon(
+                        Icons.Sharp.AccountBox,
+                        "add document",
+                        modifier = modifier.size(30.dp)
+                    )
+
+                }
+                IconButton(
+                    onClick = { /*TODO*/ },
+                ) {
+                    Icon(
+                        Icons.Sharp.Call,
+                        "add document",
+                        modifier = modifier.size(25.dp)
+                    )
+
+                }
             }
         }
     }
