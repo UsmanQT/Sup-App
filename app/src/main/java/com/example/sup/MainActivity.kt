@@ -36,6 +36,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -98,6 +102,10 @@ fun SupAppLayout(modifier: Modifier = Modifier) {
 
 @Composable
 fun MessageWritingArea(modifier: Modifier =  Modifier) {
+    var message by remember {
+        mutableStateOf("")
+    }
+
     Box (modifier = modifier
         .fillMaxSize(),
         contentAlignment = Alignment.BottomCenter) {
@@ -118,7 +126,7 @@ fun MessageWritingArea(modifier: Modifier =  Modifier) {
 
                 }
                 TextField(
-                    value = "Whats the update?", onValueChange = {},
+                    value = message , onValueChange = {message = it},
                     textStyle = TextStyle(color = Color.Black),
                     shape = RoundedCornerShape(20.dp),
                     modifier = Modifier
