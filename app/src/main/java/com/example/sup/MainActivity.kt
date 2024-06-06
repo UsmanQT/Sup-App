@@ -20,12 +20,16 @@ import androidx.compose.material.icons.sharp.Add
 import androidx.compose.material.icons.sharp.Call
 import androidx.compose.material.icons.sharp.Send
 import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sup.components.ReceiverMessageBubbles
@@ -61,6 +66,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SupAppLayout(modifier: Modifier = Modifier) {
     val backgroundImage = painterResource(id = R.drawable.whatsapp_background)
@@ -69,29 +75,43 @@ fun SupAppLayout(modifier: Modifier = Modifier) {
         mutableStateOf(mutableListOf<String>())
     }
 
-    Box {
-        Image(
-            painter = backgroundImage,
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
-        Column(
-            modifier = Modifier.fillMaxSize(), // Occupy entire available space
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start // Align content center horizontally
-        ) {
-            ReceiverMessageBubbles()
+    Scaffold (
+        topBar = {
+            CenterAlignedTopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.LightGray,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Text("SupApp", fontWeight = FontWeight.Bold)
+                }
+            )
+        },
+    ){ innerPadding ->
+        Box (modifier = modifier.padding(innerPadding)){
+            Image(
+                painter = backgroundImage,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
             Column(
                 modifier = Modifier.fillMaxSize(), // Occupy entire available space
                 verticalArrangement = Arrangement.Top,
-                horizontalAlignment = Alignment.End // Align content center horizontally
+                horizontalAlignment = Alignment.Start // Align content center horizontally
             ) {
-                SenderMessageBubbles(messageList = mutableListSender)
+                ReceiverMessageBubbles()
+                Column(
+                    modifier = Modifier.fillMaxSize(), // Occupy entire available space
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.End // Align content center horizontally
+                ) {
+                    SenderMessageBubbles(messageList = mutableListSender)
+                }
             }
-        }
-        MessageWritingArea(modifier = modifier) { newMessage ->
-            mutableListSender = (mutableListSender + newMessage).toMutableList()
+            MessageWritingArea(modifier = modifier) { newMessage ->
+                mutableListSender = (mutableListSender + newMessage).toMutableList()
+            }
         }
     }
 }
