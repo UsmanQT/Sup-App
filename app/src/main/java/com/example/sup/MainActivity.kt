@@ -16,7 +16,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material.icons.sharp.AccountBox
+import androidx.compose.material.icons.sharp.AccountCircle
 import androidx.compose.material.icons.sharp.Add
+import androidx.compose.material.icons.sharp.ArrowBack
 import androidx.compose.material.icons.sharp.Call
 import androidx.compose.material.icons.sharp.Send
 import androidx.compose.material3.Card
@@ -29,6 +31,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -77,15 +80,42 @@ fun SupAppLayout(modifier: Modifier = Modifier) {
 
     Scaffold (
         topBar = {
-            CenterAlignedTopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.LightGray,
-                    titleContentColor = MaterialTheme.colorScheme.primary,
-                ),
-                title = {
-                    Text("SupApp", fontWeight = FontWeight.Bold)
+            Row (
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        Icons.Sharp.ArrowBack,
+                        "back button",
+                    )
                 }
-            )
+                IconButton(onClick = { /*TODO*/ }) {
+                    Icon(
+                        Icons.Sharp.AccountCircle,
+                        "account circle",
+                    )
+                }
+                TopAppBar(
+                    modifier = modifier.weight(3f),
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.White,
+                        titleContentColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    title = {
+                        Text("SupApp", fontWeight = FontWeight.Bold)
+                    }
+                )
+                IconButton(
+                    modifier = modifier.weight(1f),
+                    onClick = { /*TODO*/ }) {
+                    Icon(
+
+                        Icons.Sharp.Call,
+                        "call button",
+                    )
+                }
+            }
         },
     ){ innerPadding ->
         Box (modifier = modifier.padding(innerPadding)){
