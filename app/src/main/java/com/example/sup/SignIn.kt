@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.material3.Button
@@ -20,12 +19,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @Composable
 
-fun SignInScreen(modifier: Modifier = Modifier) {
+fun SignInScreen(modifier: Modifier = Modifier, navController: NavController) {
     var emailText by remember {
         mutableStateOf("")
     }
@@ -71,7 +70,7 @@ fun SignInScreen(modifier: Modifier = Modifier) {
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = modifier.padding(bottom = 16.dp)
                 )
-            Button(onClick = { /*TODO*/ }) {
+            Button(onClick = { navController.navigate("chat-screen") }) {
                 Text(text = "Submit")
              }
         }
