@@ -224,6 +224,7 @@ fun MessageWritingArea(modifier: Modifier =  Modifier, onMessageAdded: (String) 
                     false -> IconButton(
                         onClick = {
                             onMessageAdded(message)
+                            message = ""
                         },
                     ) {
                         Icon(
