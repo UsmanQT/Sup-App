@@ -1,15 +1,10 @@
 package com.example.sup
-
-import android.content.ContentValues.TAG
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -27,15 +22,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.firestore
 
 @Composable
 fun SignUpScreen(modifier: Modifier = Modifier, navController: NavController) {
     val auth = FirebaseAuth.getInstance()
     val context = LocalContext.current
+
 
     var emailText by remember {
         mutableStateOf("")
@@ -111,6 +108,9 @@ fun SignUpScreen(modifier: Modifier = Modifier, navController: NavController) {
                 auth.createUserWithEmailAndPassword(emailText, passwordText)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
+                            if(auth.currentUser != null) {
+                                addUserToFirestore(auth.currentUser!!.uid, emailText, "profile_pic.jpg")
+                            }
                             // Sign up success, navigate to the next screen
                             navController.navigate("sign-in")
                         } else {
@@ -126,4 +126,28 @@ fun SignUpScreen(modifier: Modifier = Modifier, navController: NavController) {
         }
     }
     }
+}
+
+// Function to add a user document to Firestore
+fun addUserToFirestore(userId: String, email: String, profilePictureUrl: String?) {
+
+    val db = Firebase.firestore
+
+    // Create a new user document with the specified ID
+    val userDocRef = db.collection("users").document(userId)
+
+    // Create a data object to represent the user
+    val user = hashMapOf(
+        "email" to email,
+        "profile_picture_url" to profilePictureUrl
+    )
+
+    // Add the user document to Firestore
+    userDocRef.set(user)
+        .addOnSuccessListener {
+            println("User document added successfully with ID: $userId")
+        }
+        .addOnFailureListener { e ->
+            println("Error adding user document: $e")
+        }
 }
