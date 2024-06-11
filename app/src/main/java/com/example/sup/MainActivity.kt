@@ -38,21 +38,11 @@ class MainActivity : ComponentActivity() {
                             SignInScreen(modifier = Modifier, navController)
                         }
                         composable("chat-screen") {
-                            SupAppLayout()
+                            SupAppLayout(modifier = Modifier, navController)
                         }
                     })
                 }
             }
         }
-    }
-}
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SupTheme {
-        SupAppLayout()
     }
 }
