@@ -5,7 +5,11 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -23,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
@@ -49,11 +54,19 @@ fun SignUpScreen(modifier: Modifier = Modifier, navController: NavController) {
             .fillMaxSize()
             .padding(innerPadding)
     ){
-        Text(
-            text = "Sign Up",
-            modifier = modifier.padding(bottom = 16.dp),
-            style = MaterialTheme.typography.titleLarge
-        )
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "Sign Up",
+                modifier = modifier.padding(bottom = 16.dp),
+                style = MaterialTheme.typography.titleLarge
+            )
+            Spacer(modifier = modifier.padding(50.dp))
+            Button(onClick = { navController.navigate("sign-in")}) {
+                Text(text = "Sign In")
+            }
+        }
         OutlinedTextField(
             value = emailText,
             onValueChange = {emailText = it},
