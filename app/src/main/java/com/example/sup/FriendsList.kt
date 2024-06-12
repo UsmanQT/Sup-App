@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.sup.data.User
+import com.google.firebase.auth.FirebaseAuth
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,6 +37,8 @@ fun FriendsListScreen(
     modifier: Modifier = Modifier, navController: NavController, userViewModel: UserViewModel = viewModel()){
     val users by userViewModel.users.collectAsState()
 
+    val currentUser = FirebaseAuth.getInstance().currentUser
+
     Scaffold(
         topBar = {
             TopAppBar(title = { Text("SupApp Users") })
@@ -44,8 +47,9 @@ fun FriendsListScreen(
             LazyColumn(
                 modifier = Modifier.padding(paddingValues)
             ) {
-                items(users) { user ->
-                    UserItem(user)
+                items(users.filter {it.id != currentUser?.uid }) { user ->
+                    val isFriend = userViewModel.isUserFriend(user.id)
+                    UserItem(user, isFriend)
                 }
             }
         }
@@ -53,7 +57,7 @@ fun FriendsListScreen(
 }
 
 @Composable
-fun UserItem(user: User) {
+fun UserItem(user: User, isFriend: Boolean) {
     Column(
         modifier = Modifier.padding(16.dp)
             .fillMaxWidth()
@@ -66,19 +70,14 @@ fun UserItem(user: User) {
             Text(text = "Email: ${user.email}", style = MaterialTheme.typography.bodyMedium)
             Button(
                 onClick = { /*TODO*/ },
-                modifier = Modifier.height(30.dp)
+                modifier = Modifier.height(30.dp),
+                enabled = !isFriend
             ) {
                 Text(
-                    text = "Add friend",
+                    text = if (isFriend) "Friend" else "Add friend",
                     style = MaterialTheme.typography.labelSmall)
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun UserItemPreview() {
-    UserItem(User(email = "john.doe@example.com", profile_picture_url = ""))
 }
 
