@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    NavHost(navController = navController, startDestination = "sign-up", builder = {
+                    NavHost(navController = navController, startDestination = "sign-in", builder = {
                         composable("sign-up") {
                             SignUpScreen(modifier = Modifier, navController)
                         }
