@@ -40,6 +40,9 @@ class MainActivity : ComponentActivity() {
                         composable("chat-screen") {
                             SupAppLayout(modifier = Modifier, navController)
                         }
+                        composable("friends-list") {
+                            FriendsListScreen(modifier = Modifier, navController)
+                        }
                     })
                 }
             }

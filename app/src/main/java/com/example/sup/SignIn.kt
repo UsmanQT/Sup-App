@@ -92,7 +92,7 @@ fun SignInScreen(modifier: Modifier = Modifier, navController: NavController) {
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 // Sign up success, navigate to the next screen
-                                navController.navigate("chat-screen")
+                                navController.navigate("friends-list")
                             } else {
                                 // If sign up fails, display a message to the user
                                 Toast.makeText(context, "Sign Up Failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()

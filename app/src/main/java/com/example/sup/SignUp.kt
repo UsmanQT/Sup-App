@@ -139,6 +139,8 @@ fun addUserToFirestore(userId: String, email: String, profilePictureUrl: String?
     // Create a data object to represent the user
     val user = hashMapOf(
         "email" to email,
+        "friends" to listOf<String>(""), // Empty list for friends
+        "chats" to listOf<String>(""), // Empty list for chats
         "profile_picture_url" to profilePictureUrl
     )
 
