@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,8 +40,10 @@ fun FriendsListScreen(
         topBar = {
             TopAppBar(title = { Text("SupApp Users") })
         },
-        content = {
-            LazyColumn {
+        content = { paddingValues ->
+            LazyColumn(
+                modifier = Modifier.padding(paddingValues)
+            ) {
                 items(users) { user ->
                     UserItem(user)
                 }
@@ -51,7 +54,10 @@ fun FriendsListScreen(
 
 @Composable
 fun UserItem(user: User) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier.padding(16.dp)
+            .fillMaxWidth()
+    ) {
         Row (
             Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
