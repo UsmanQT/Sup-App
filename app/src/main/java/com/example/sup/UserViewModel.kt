@@ -2,8 +2,11 @@ package com.example.sup
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.example.sup.data.FriendRequest
+import com.example.sup.data.RequestStatus
 import com.example.sup.data.User
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,4 +49,98 @@ class UserViewModel : ViewModel() {
         }
         return false
     }
+
+    fun sendFriendRequest(sender: User, receiver: User) {
+        val db = FirebaseFirestore.getInstance()
+
+        val friendRequest = FriendRequest(sender.id, receiver.id, RequestStatus.REQUESTED)
+
+        // Update sender's sentFriendRequests in Firestore
+        db.collection("users").document(sender.id)
+            .update("sentFriendRequests", FieldValue.arrayUnion(friendRequest))
+            .addOnSuccessListener {
+                Log.d("SendFriendRequest", "Friend request sent by ${sender.email} to ${receiver.email}")
+            }
+            .addOnFailureListener { e ->
+                Log.e("SendFriendRequest", "Error sending friend request", e)
+            }
+
+        // Update receiver's receivedFriendRequests in Firestore
+        db.collection("users").document(receiver.id)
+            .update("receivedFriendRequests", FieldValue.arrayUnion(friendRequest))
+            .addOnSuccessListener {
+                Log.d("SendFriendRequest", "Friend request received by ${receiver.email} from ${sender.email}")
+            }
+            .addOnFailureListener { e ->
+                Log.e("SendFriendRequest", "Error receiving friend request", e)
+            }
+    }
+
+
+    fun acceptFriendRequest(receiver: User, senderId: String) {
+        val db = FirebaseFirestore.getInstance()
+
+        val request = receiver.receivedFriendRequests.find { it.senderId == senderId && it.status == RequestStatus.REQUESTED }
+            ?: throw IllegalArgumentException("No friend request from this user")
+
+        val updatedRequest = request.copy(status = RequestStatus.ACCEPTED)
+
+        // Update receiver's friends and receivedFriendRequests in Firestore
+        db.collection("users").document(receiver.id)
+            .update("friends", FieldValue.arrayUnion(senderId))
+            .addOnSuccessListener {
+                Log.d("AcceptFriendRequest", "Friend request accepted by ${receiver.email}")
+            }
+            .addOnFailureListener { e ->
+                Log.e("AcceptFriendRequest", "Error accepting friend request", e)
+            }
+
+        db.collection("users").document(receiver.id)
+            .update("receivedFriendRequests", FieldValue.arrayRemove(request))
+            .addOnSuccessListener {
+                db.collection("users").document(receiver.id)
+                    .update("receivedFriendRequests", FieldValue.arrayUnion(updatedRequest))
+            }
+            .addOnFailureListener { e ->
+                Log.e("AcceptFriendRequest", "Error updating friend request status", e)
+            }
+
+        // Update sender's friends and sentFriendRequests in Firestore
+        db.collection("users").document(senderId)
+            .update("friends", FieldValue.arrayUnion(receiver.id))
+            .addOnSuccessListener {
+                Log.d("AcceptFriendRequest", "Friend added to ${senderId}")
+            }
+            .addOnFailureListener { e ->
+                Log.e("AcceptFriendRequest", "Error adding friend", e)
+            }
+
+        db.collection("users").document(senderId)
+            .update("sentFriendRequests", FieldValue.arrayRemove(request))
+            .addOnSuccessListener {
+                db.collection("users").document(senderId)
+                    .update("sentFriendRequests", FieldValue.arrayUnion(updatedRequest))
+            }
+            .addOnFailureListener { e ->
+                Log.e("AcceptFriendRequest", "Error updating friend request status", e)
+            }
+    }
+    fun getFriendRequestStatus(userId: String, currentUserId: String, callback: (RequestStatus?) -> Unit) {
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection("users").document(currentUserId).get()
+            .addOnSuccessListener { document ->
+                val currentUser = document.toObject(User::class.java)
+                val receivedRequest = currentUser?.receivedFriendRequests?.find { it.senderId == userId }
+                val sentRequest = currentUser?.sentFriendRequests?.find { it.receiverId == userId }
+
+                callback(receivedRequest?.status ?: sentRequest?.status)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("getFriendRequestStatus", "Error fetching user data", exception)
+                callback(null)
+            }
+    }
+
+
 }
