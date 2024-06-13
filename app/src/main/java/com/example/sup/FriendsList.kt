@@ -38,11 +38,12 @@ import com.example.sup.data.RequestStatus
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-
 fun FriendsListScreen(
-    modifier: Modifier = Modifier, navController: NavController, userViewModel: UserViewModel = viewModel()){
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    userViewModel: UserViewModel = viewModel()
+) {
     val users by userViewModel.users.collectAsState()
-
     val currentUser = FirebaseAuth.getInstance().currentUser
 
     Scaffold(
@@ -58,8 +59,8 @@ fun FriendsListScreen(
                     var requestStatus by remember { mutableStateOf<RequestStatus?>(null) }
 
                     LaunchedEffect(user.id) {
-                        currentUser?.uid?.let {
-                            userViewModel.getFriendRequestStatus(user.id, it) { status ->
+                        currentUser?.uid?.let { currentUserId ->
+                            userViewModel.getFriendRequestStatus(user.id, currentUserId) { status ->
                                 requestStatus = status
                             }
                         }
@@ -68,8 +69,12 @@ fun FriendsListScreen(
                     UserItem(user, isFriend, { selectedUser ->
                         currentUser?.let {
                             val email = it.email ?: "unknown@example.com"
-                            userViewModel.sendFriendRequest(User(it.uid, email), selectedUser) }
-                    }, requestStatus)
+                            userViewModel.sendFriendRequest(User(it.uid, email), selectedUser)
+                        }
+                    }, requestStatus) { newStatus ->
+                        // Update requestStatus immediately upon user interaction
+                        requestStatus = newStatus
+                    }
                 }
             }
         }
@@ -77,7 +82,13 @@ fun FriendsListScreen(
 }
 
 @Composable
-fun UserItem(user: User, isFriend: Boolean, onAddFriendClick: (User) -> Unit, requestStatus: RequestStatus?) {
+fun UserItem(
+    user: User,
+    isFriend: Boolean,
+    onAddFriendClick: (User) -> Unit,
+    requestStatus: RequestStatus?,
+    onRequestStatusChange: (RequestStatus?) -> Unit
+) {
     Column(
         modifier = Modifier.padding(16.dp)
             .fillMaxWidth()
@@ -89,17 +100,15 @@ fun UserItem(user: User, isFriend: Boolean, onAddFriendClick: (User) -> Unit, re
         ) {
             Text(text = "Email: ${user.email}", style = MaterialTheme.typography.bodyMedium)
             Button(
-                onClick = { onAddFriendClick(user) },
+                onClick = {
+                    onAddFriendClick(user)
+                    onRequestStatusChange(RequestStatus.REQUESTED) // Update state immediately
+                },
                 modifier = Modifier.height(30.dp),
                 enabled = !isFriend && requestStatus != RequestStatus.REQUESTED
             ) {
                 Text(
-                    text = when (requestStatus) {
-                        RequestStatus.REQUESTED -> "Requested"
-                        RequestStatus.ACCEPTED -> "Friend"
-                        RequestStatus.REJECTED -> "Rejected"
-                        else -> if (isFriend) "Friend" else "Add friend"
-                    },
+                    text = getRequestStatusText(requestStatus, isFriend),
                     style = MaterialTheme.typography.labelSmall
                 )
             }
@@ -108,3 +117,12 @@ fun UserItem(user: User, isFriend: Boolean, onAddFriendClick: (User) -> Unit, re
 }
 
 
+@Composable
+private fun getRequestStatusText(requestStatus: RequestStatus?, isFriend: Boolean): String {
+    return when (requestStatus) {
+        RequestStatus.REQUESTED -> "Requested"
+        RequestStatus.ACCEPTED -> "Friend"
+        RequestStatus.REJECTED -> "Rejected"
+        else -> if (isFriend) "Friend" else "Add friend"
+    }
+}

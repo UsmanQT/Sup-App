@@ -60,6 +60,25 @@ class UserViewModel : ViewModel() {
             .update("sentFriendRequests", FieldValue.arrayUnion(friendRequest))
             .addOnSuccessListener {
                 Log.d("SendFriendRequest", "Friend request sent by ${sender.email} to ${receiver.email}")
+
+                // Update local state for sender
+                val updatedSender = _users.value.find { it.id == sender.id }?.copy(
+                    sentFriendRequests = sender.sentFriendRequests + friendRequest
+                )
+
+                // Update local state for receiver
+                val updatedReceiver = _users.value.find { it.id == receiver.id }?.copy(
+                    receivedFriendRequests = receiver.receivedFriendRequests + friendRequest
+                )
+
+                // Update the state flow
+                _users.value = _users.value.map {
+                    when (it.id) {
+                        sender.id -> updatedSender ?: it
+                        receiver.id -> updatedReceiver ?: it
+                        else -> it
+                    }
+                }
             }
             .addOnFailureListener { e ->
                 Log.e("SendFriendRequest", "Error sending friend request", e)
@@ -75,6 +94,7 @@ class UserViewModel : ViewModel() {
                 Log.e("SendFriendRequest", "Error receiving friend request", e)
             }
     }
+
 
 
     fun acceptFriendRequest(receiver: User, senderId: String) {
